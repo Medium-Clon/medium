@@ -1,0 +1,40 @@
+{
+  "name": "medium_clone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.0",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.6.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "mocha": "^9.0.1",
+    "mockgoose": "^8.0.4",
+    "nodemon": "^2.0.7",
+    "nyc": "^15.1.0",
+    "should": "^13.2.3",
+    "supertest": "^6.1.3"
+  },
+  "scripts": {
+    "devstart": "nodemon app.js",
+    "test": "mocha test --recursive --exit",
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": "14.x",
+    "npm": "6.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
