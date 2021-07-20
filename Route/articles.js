@@ -12,6 +12,8 @@ Router.post(`/articles`,auth,articleCon.create_article);
 //view specific post
 Router.get(`/article/:_id`,auth,articleCon.one_article);
 
+//get article by category
+Router.get(`/article/category/:_id`,auth,articleCon.article_by_category)
 //user comment
 Router.put(`/comment`,auth,articleCon.comment);
 

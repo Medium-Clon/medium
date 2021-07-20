@@ -18,21 +18,60 @@ exports.all_article = async (req,res)=>{
 
 }
 
+exports.one_article = async (req,res)=>{
+   try{
+    const oneArticle = await article.findById(req.params._id);
+    if(!oneArticle){
+        res.status(404).json("Article Not Found");
+    }
+    else{
+        res.status(201).json(oneArticle);
+    }
+   }
+   catch(err){
+       if(err){
+           res.json("Not Found")
+       }
+   }
+   
+   
+}
+
+exports.article_by_category = async (req,res)=>{ 
+try {
+    const catArticle = await article.find({category:req.params._id});
+    if(catArticle.length === 0){
+        res.status(302).json("No article in this category")
+    }
+    else{
+        res.status(201).json(catArticle)
+    }
+    
+} catch (error) {
+    if(error){
+        res.status(500).json("Server got bugz");
+        console.log(error)
+        return;
+
+    }
+}
+}
+
 exports.create_article = async(req,res)=>{
     const bearerHeader = req.headers["authorization"];
     const token = bearerHeader && bearerHeader.split(" ")[1]
     let postBy = jwt.verify(token,Secret).id; 
 
-    const catigory = await category.findById({_id:req.body.category});
-    if(!catigory){
-        res.status(401).json("category is incorrect")
-    }
+   // const catigory = await category.findById({_id:req.body.category});
+   // if(!catigory){
+   //     res.status(401).json("category is incorrect")
+   // }
  
 
     const post = {
         title:req.body.title,
         article_post:req.body.article_post,
-        category:catigory._id,
+        category:req.body.category,
         post_by:postBy
     }
     const newArticle = await new article(post).save();
@@ -83,15 +122,6 @@ exports.unlike = (req,res)=>{
     })
 }
 
-exports.one_article = async (req,res)=>{
-    const oneArticle = await article.findById(req.params._id);
-    if(!oneArticle){
-        res.status(404).json("Article Not Found");
-    }
-    else{
-        res.status(201).json(oneArticle);
-    }
-}
 
 exports.comment = (req,res)=>{
     const bearerHeader = req.headers["authorization"];
@@ -101,13 +131,15 @@ exports.comment = (req,res)=>{
         text:req.body.text,
         postedby:postBy
     }
+    console.log(req.body._id)
     article.findByIdAndUpdate(req.body._id,{
-        $push:{likes:postBy}
+        $push:{comment:comment}
     },{
         new:true
-    }).exec((err,result)=>{
-        if(err){
-            
+    })
+    .populate("comment.postedby","username")
+    .exec((err,result)=>{
+        if(err){  
             return res.status(422).json({error:err})
         }
         else{
@@ -131,17 +163,22 @@ exports.search_article = (req,res)=>{
 exports.report = (req,res)=>{
     const bearerHeader = req.headers["authorization"];
     const token = bearerHeader && bearerHeader.split(" ")[1]
-    let postBy = jwt.verify(token,Secret).id; 
+    let postBy = jwt.verify(token,Secret).id;
+    reports = {
+        text:req.body.text,
+        reportby:postBy
+    }
     article.findByIdAndUpdate(req.body._id,{
-        $push:{reports:{text:req.body.text,reportby:postBy}}
+        $push:{reports:reports}
     },{
         new:true
-    }).exec((err,result)=>{
+    })
+    .populate("reports.reportby","username -_id")
+    .exec((err,result)=>{
         if(err){
             return res.status(422).json({error:err})
         }
         else{
-            console.log("testing")
             res.json(result)
         }
     })

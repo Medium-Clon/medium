@@ -12,7 +12,7 @@ const articleSchema = new Schema({
 
     },
     comment:[{
-        text:{type:String},
+        text:String,
         postedby:{
             type:Schema.ObjectId,
             ref:"users"

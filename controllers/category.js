@@ -10,9 +10,7 @@ exports.category = async (req,res)=>{
         res.status(422).json({error:error});
     }
     else{
-        res.status(200).json({
-            Success:newCategory + " Created"
-        })
+        res.status(200).json(newCategory)
     }
 }
 
@@ -29,7 +27,7 @@ exports.all_category = async(req,res)=>{
 }
 
 exports.sortCategory = async(req,res)=>{
-    const categories = await catmodel.findById({_id:req.params._id}).select("article").populate("article");
+    const categories = await catmodel.findById({_id:req.params._id}).select("name -_id");
     if(!categories){
         res.status(404).json("Not Found")
     }

@@ -9,11 +9,7 @@ const categorySchema = new Schema({
     date:{
         type:Date,
         default:Date.now()
-    },
-    article:[{
-        type:Schema.ObjectId,
-        ref:"article"
-    }]
+    }
 })
 
 module.exports = mongoose.model("category",categorySchema);
