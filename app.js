@@ -10,8 +10,9 @@ const {connection} = require("./db")
 const home = require("./Route/home");
 const users = require("./Route/user");
 const admin = require("./Route/admin");
-const articles = require("./Route/articles")
-const category = require("./Route/category")
+const articles = require("./Route/articles");
+const category = require("./Route/category");
+const passwordRecovery = require("./Route/forgetpassword");
 
 
 
@@ -26,6 +27,7 @@ app.use(`${api}/`,users);
 app.use(`${api}/`,admin);
 app.use(`${api}/`,articles);
 app.use(`${api}/`,category);
+app.use(`${api}/`,passwordRecovery);
 
 //error handler
 app.use((error, req, res, next) => {

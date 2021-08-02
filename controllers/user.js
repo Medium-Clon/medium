@@ -1,7 +1,8 @@
 const {Secret} = require("../helpers/keys");
 const bcrypt = require("bcrypt");
 const users = require("../model/users");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const Token = require("../model/Token.model");
 
 exports.get_signup = async (req,res)=>{
    await res.json("Enter Your Details")
@@ -14,36 +15,84 @@ exports.post_signup = async (req,res)=>{
    if(!body.username || !body.email || !body.password1 || !body.password2){
        res.status(301).json("Some Fields are missing. Fill all Required Fields")
    }
-   if(body.password1 !== body.password2){
-       res.status(301).json("password doesn't match")
-   }
    else{
-      await users.findOne({email:body.email}).then(users =>{
-           if(users){
-               res.status(301).json("Email Already Registered. Login");
-           }
-       })
-       var password = await bcrypt.hash(req.body.password1,10);
-       var repass = await bcrypt.hash(req.body.password2,10);
-       user = {
-           username:body.username,
-           email:body.email,
-           password1:password,
-           password2:repass
-       }
-       try{
-           var newUser = await new users(user).save();
-           res.send(newUser);
-       }catch(err){
-           if(err){
-               res.status(301)
-               res.send(err)
-           }
-       }
-}   
-    
-}
+    if(body.password1 !== body.password2){
+        res.status(301).json("password doesn't match")
+    }
+    else{
+        let newUser = await users.findOne({ email: body.email }).then(
+            async (user)=>{
+                if(user) {
+                    res.status(422).json("user already exist")
+                  }
+                  else{
+                    var password = await bcrypt.hash(req.body.password1,10);
+                    var repass = await bcrypt.hash(req.body.password2,10);
+                
+                    user = {
+                        username:body.username,
+                        email:body.email,
+                        password1:password,
+                        password2:repass
+                      }
+              
+                  newUzer = new users(user);
+                 
+                  const token = {
+                    userId:newUzer._id,
+                    token:jwt.sign({ id: newUzer._id }, Secret)
+                  };
+                  tk = new Token(token);
+                  await newUzer.save();
+                  await tk.save();  
+                  res.status(201).json(data = {
+                    userId: newUzer._id,
+                    email: newUzer.email,
+                    name: newUzer.username,
+                    token: token,
+                  });
 
+            }
+      })
+    }
+   }
+  
+
+
+  
+ //   const check = await users.find({email:body.email});
+ //   if(check){
+ //       res.status(302).json("Email Already Registered");
+ //   }
+ //         var newUser =  new users(user);
+ //          const TK = {
+ //              userId:newUser._id,
+ //              token:jwt.sign({ id: newUser._id }, Secret)
+ //           };
+ //          userToken = new TokenModel(TK);
+ //          await userToken.save()
+ //          await newUser.save();
+ //          res.status(200).json({email:newUser.email,token:userToken.token});
+ //  else{
+ //      var password = await bcrypt.hash(req.body.password1,10);
+ //      var repass = await bcrypt.hash(req.body.password2,10);
+ //      user = {
+ //          username:body.username,
+ //          email:body.email,
+ //          password1:password,
+ //          password2:repass
+ //      }
+ //      try{
+ //       let user = await users.findOne({email:body.email});
+ //       }catch(err){
+ //           res.status(302).json("Email Already Registered. Login");
+ //       }
+ //          var newUser =  new users(user);
+ //          const token = jwt.sign({ id: newUser._id }, Secret);
+ //          await newUser.save();
+ //          res.status(200).json(newUser.email,newUser.username,token);
+ //   }
+}
 
 exports.get_login = (req,res)=>{
    res.json("Enter your Login Details")

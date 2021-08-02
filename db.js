@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {mongouri,MongoUri} = require("./helpers/keys");
+const {MongoUri,mongouri} = require("./helpers/keys");
 
 
 
@@ -14,7 +14,7 @@ exports.connection = async()=>{
       mockgoose.prepareStorage()
       .then(()=>{
         mongoose.connect(
-          MongoUri, {
+          mongouri, {
           useNewUrlParser:true, 
           useUnifiedTopology:true, 
           useCreateIndex:true

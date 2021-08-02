@@ -9,8 +9,8 @@ const {decode} = require("../helpers/decode");
 
 exports.all_article = async (req,res)=>{
     const articles = await article.find().sort({createdOn:"desc"});
-    if(!articles){
-        res.status(404).json(new Error("No Articles"))
+    if(articles.length == 0){
+        res.status(404).json("No Articles")
     }
     else{
         res.status(200).json(articles);
@@ -62,10 +62,6 @@ exports.create_article = async(req,res)=>{
     const token = bearerHeader && bearerHeader.split(" ")[1]
     let postBy = jwt.verify(token,Secret).id; 
 
-   // const catigory = await category.findById({_id:req.body.category});
-   // if(!catigory){
-   //     res.status(401).json("category is incorrect")
-   // }
  
 
     const post = {
@@ -84,7 +80,6 @@ exports.create_article = async(req,res)=>{
     console.log(newArticle)
 }
  
-
 
 exports.like = (req,res)=>{
     const bearerHeader = req.headers["authorization"];
@@ -149,14 +144,20 @@ exports.comment = (req,res)=>{
     })
 }
 
-exports.search_article = (req,res)=>{
-    let  pattern = new RegExp("^"+req.body.query);
-    article.find({title:"^"+req.body.query})
-    .then(article=>{
-        res.json({article})
-    }).catch(err=>{
-        console.log(err)
-    })
+exports.search_article = async (req,res)=>{
+    if(!req.query.search){
+        res.status(301).json("Bad Request")
+    }
+    pattern = new RegExp(req.query.search)
+    articles = await article.find({article_post:pattern});
+   //console.log(articles)
+   if(articles.length == 0){
+       res.status(402).json("No such article")
+   }
+   else{
+      res.status(200).json(articles)
+   }
+
 }
 
 

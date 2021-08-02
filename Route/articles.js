@@ -6,7 +6,7 @@ const auth = require("../helpers/jwt");
 //get all articles
 Router.get(`/articles`,auth,articleCon.all_article);
 
-//create category
+//create article
 Router.post(`/articles`,auth,articleCon.create_article);
 
 //view specific post
@@ -19,7 +19,7 @@ Router.put(`/comment`,auth,articleCon.comment);
 
 
 //search article
-Router.post(`/search-article`,auth,articleCon.search_article)
+Router.get(`/search-article`,auth,articleCon.search_article)
 
 
 Router.put(`/like`,auth,articleCon.like);
